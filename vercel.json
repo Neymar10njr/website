@@ -1,0 +1,24 @@
+{
+  "version": 3,
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "frontend/pages/**", "use": "@vercel/static" },
+    { "src": "frontend/css/**", "use": "@vercel/static" },
+    { "src": "frontend/js/**", "use": "@vercel/static" },
+    { "src": "frontend/assets/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "/css/(.*)", "dest": "/frontend/css/$1" },
+    { "src": "/js/(.*)", "dest": "/frontend/js/$1" },
+    { "src": "/assets/(.*)", "dest": "/frontend/assets/$1" },
+    { "src": "/$", "dest": "/frontend/pages/index.html" },
+    { "src": "/(.*\\.html)", "dest": "/frontend/pages/$1" },
+    { "src": "/(.*)", "dest": "/frontend/pages/$1" }
+  ],
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.11"
+    }
+  }
+}
