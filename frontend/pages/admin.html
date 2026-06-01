@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/booking-form.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan · Admin</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">View Site</a></li>
+                <li><a href="account.html">My Account</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="admin-shell">
+        <aside class="admin-sidebar">
+            <div class="admin-user-card" id="adminUserCard">
+                <div class="avatar">👑</div>
+                <div>
+                    <div class="admin-name" id="adminName">Admin</div>
+                    <div class="admin-role">Administrator</div>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <button class="admin-nav-btn active" data-tab="overview">📊 Overview</button>
+                <button class="admin-nav-btn nav-primary" data-tab="events">📅 Scheduled Departures</button>
+                <button class="admin-nav-btn" data-tab="tours">🗺️ Tour Catalogue</button>
+                <button class="admin-nav-btn" data-tab="operator">🏢 Operator Profile</button>
+                <button class="admin-nav-btn" data-tab="staff">👥 Staff &amp; Guides</button>
+                <button class="admin-nav-btn" data-tab="accommodations">🏨 Accommodations</button>
+                <button class="admin-nav-btn" data-tab="bookings">📋 Bookings</button>
+                <button class="admin-nav-btn" data-tab="users">👤 Users</button>
+                <button class="admin-nav-btn" data-tab="images">🖼️ Images</button>
+                <button class="admin-nav-btn" data-tab="moments">📸 Trek Moments</button>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <!-- ===== Overview ===== -->
+            <section class="admin-pane active" data-pane="overview">
+                <h2>Overview</h2>
+
+                <div class="overview-cta">
+                    <div>
+                        <strong>📅 To publish a trek/tour for tourists to book — create a Departure.</strong>
+                        <p>A "departure" is a dated run of a tour (with a guide, capacity &amp; price). The moment you create one it appears on the homepage, the Group Tours page, and every tourist's dashboard. <em>Editing a tour in the catalogue does NOT publish it — only creating a departure does.</em></p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="switchTab('events')">📅 Create a Departure →</button>
+                </div>
+
+                <div class="stat-grid" id="statGrid">
+                    <p style="color:#888">Loading stats…</p>
+                </div>
+            </section>
+
+            <!-- ===== Operator Profile ===== -->
+            <section class="admin-pane" data-pane="operator">
+                <h2>Operator Profile</h2>
+                <p class="pane-help">This information is shown on every group tour event card across the site.</p>
+                <form id="operatorForm" class="admin-form" onsubmit="saveOperator(event)">
+                    <div class="grid-2">
+                        <label>Company Name <input id="op_company_name" required></label>
+                        <label>Tagline <input id="op_tagline"></label>
+                        <label>Licence Number (Tourism Council of Bhutan) <input id="op_licence_number"></label>
+                        <label>Logo URL <input id="op_logo_url"></label>
+                        <label>Support Phone <input id="op_support_phone"></label>
+                        <label>WhatsApp Number <input id="op_whatsapp_number"></label>
+                        <label>Support Email <input type="email" id="op_support_email"></label>
+                        <label>Website <input id="op_website"></label>
+                        <label>Office Address <input id="op_office_address"></label>
+                        <label>Business Hours <input id="op_business_hours" placeholder="9:00 AM – 6:00 PM BST"></label>
+                        <label>Years Active <input type="number" id="op_years_active" min="0"></label>
+                    </div>
+                    <label>Description / About Us
+                        <textarea id="op_description" rows="4"></textarea>
+                    </label>
+                    <div class="admin-form-actions">
+                        <button type="submit" class="btn btn-primary">Save Operator Profile</button>
+                        <span id="operatorMessage" class="form-message"></span>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ===== Staff ===== -->
+            <section class="admin-pane" data-pane="staff">
+                <h2>Staff &amp; Guides</h2>
+                <details class="invite-card" id="inviteCard">
+                    <summary>➕ Invite a new staff member</summary>
+                    <form class="admin-form" onsubmit="inviteStaff(event)">
+                        <div class="grid-2">
+                            <label>Username * <input id="st_username" required></label>
+                            <label>Email * <input type="email" id="st_email" required></label>
+                            <label>First Name * <input id="st_first_name" required></label>
+                            <label>Last Name * <input id="st_last_name" required></label>
+                            <label>Phone <input id="st_phone"></label>
+                            <label>Role Title <input id="st_role_title" placeholder="Trek Guide / Pilgrimage Lead / Day-Hike Lead"></label>
+                            <label>Years Experience <input type="number" id="st_years_experience" min="0"></label>
+                            <label>Languages <input id="st_languages" placeholder="Dzongkha, English"></label>
+                            <label>Guide Licence # <input id="st_licence"></label>
+                            <label>Photo URL <input id="st_photo_url"></label>
+                        </div>
+                        <label>Bio
+                            <textarea id="st_bio" rows="3"></textarea>
+                        </label>
+                        <label>Certifications
+                            <textarea id="st_certifications" rows="2"></textarea>
+                        </label>
+                        <label>Temporary Password (optional, auto-generated if blank)
+                            <input id="st_password" type="text" autocomplete="off">
+                        </label>
+                        <div class="admin-form-actions">
+                            <button type="submit" class="btn btn-primary">Create Staff Account</button>
+                            <span id="staffMessage" class="form-message"></span>
+                        </div>
+                    </form>
+                </details>
+
+                <h3 style="margin-top:1.5rem">Active staff</h3>
+                <div id="staffList" class="staff-grid"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Tour Catalogue ===== -->
+            <section class="admin-pane" data-pane="tours">
+                <h2>Tour Catalogue</h2>
+                <p class="pane-help" style="background:#fff4cc; border:1px solid #f4d877; padding:0.75rem 1rem; border-radius:8px; color:#8a6d10;">
+                    ⚠ <strong>A tour here is only a definition.</strong> It is <strong>NOT</strong> visible to tourists and <strong>NOT</strong> on the Group Tours page or homepage until you schedule an <strong>Event</strong> for it.
+                    Use the green <strong>“+ Schedule departure”</strong> button on any tour row below to publish a dated departure tourists can book.
+                </p>
+
+                <details class="invite-card" id="tourFormCard">
+                    <summary id="tourFormSummary">➕ Create a new tour</summary>
+                    <form id="tourForm" class="admin-form" onsubmit="submitTour(event)" novalidate>
+                        <input type="hidden" id="t_id" value="">
+                        <div class="grid-2">
+                            <label>Name *
+                                <input id="t_name" required placeholder="e.g. Druk Path Trek">
+                            </label>
+                            <label>Tour type *
+                                <select id="t_tour_type" required onchange="onTourTypeChange()">
+                                    <option value="trek">⛰️ Trek</option>
+                                    <option value="hike">🥾 Day Hike</option>
+                                    <option value="pilgrimage">🛕 Pilgrimage</option>
+                                </select>
+                            </label>
+                            <label>Difficulty
+                                <select id="t_difficulty">
+                                    <option value="">—</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Difficult">Difficult</option>
+                                </select>
+                            </label>
+                            <label>Country
+                                <input id="t_country" placeholder="Bhutan" value="Bhutan">
+                            </label>
+                            <label>Region / Dzongkhag *
+                                <input id="t_dzongkhag" required placeholder="e.g. Paro, Bumthang, Paro Departure">
+                            </label>
+                            <label id="t_religious_label" style="display:none">Religious tradition
+                                <input id="t_religious_tradition" placeholder="Buddhist / Hindu / Mixed">
+                            </label>
+                            <label>Duration (days)
+                                <input type="number" id="t_duration_days" min="1" max="60">
+                            </label>
+                            <label>Distance (km)
+                                <input type="number" id="t_distance_km" min="0" step="0.1">
+                            </label>
+                            <label>Altitude start (m)
+                                <input type="number" id="t_altitude_start" min="0">
+                            </label>
+                            <label>Altitude end (m)
+                                <input type="number" id="t_altitude_end" min="0">
+                            </label>
+                            <label>Best season
+                                <input id="t_best_season" placeholder="e.g. March-May, September-November">
+                            </label>
+                            <label>Tour image
+                                <input type="file" id="t_image_file" accept="image/*" onchange="uploadTourImage(event)">
+                                <input id="t_image_url" placeholder="…or paste an image URL" style="margin-top:0.4rem">
+                                <div id="t_image_preview" style="display:none; margin-top:0.5rem">
+                                    <img id="t_image_preview_img" alt="" style="max-height:140px; border-radius:6px; display:block">
+                                    <small id="t_image_upload_status" style="display:block; margin-top:0.3rem"></small>
+                                </div>
+                            </label>
+                        </div>
+                        <label>Description
+                            <textarea id="t_description" rows="3"></textarea>
+                        </label>
+                        <label id="t_sacred_label" style="display:none">Sacred sites (semicolon-separated)
+                            <textarea id="t_sacred_sites" rows="2" placeholder="Chimi Lhakhang; Punakha Dzong; ..."></textarea>
+                        </label>
+
+                        <h3 style="margin-top:1rem">Stops / Itinerary</h3>
+                        <p class="pane-help" style="margin-top:-0.5rem">Optional — add stops in visit order. Each stop has a name, altitude (m), and short description.</p>
+                        <div id="stopsContainer"></div>
+                        <button type="button" class="btn-mini btn-go" onclick="addStopRow()" style="margin-top:0.5rem">+ Add stop</button>
+
+                        <div class="admin-form-actions">
+                            <button type="submit" class="btn btn-primary" id="tourSubmitBtn">Create Tour</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="resetTourForm()">Cancel</button>
+                            <span id="tourMessage" class="form-message"></span>
+                        </div>
+                    </form>
+                </details>
+
+                <div id="tourSavedMsg" class="form-message" style="display:none; margin-bottom:0.75rem; padding:0.6rem 0.85rem; border-radius:6px;"></div>
+
+                <div class="filter-row">
+                    <button class="filter-pill active" onclick="loadTours('')">All</button>
+                    <button class="filter-pill" onclick="loadTours('trek')">Treks</button>
+                    <button class="filter-pill" onclick="loadTours('hike')">Hikes</button>
+                    <button class="filter-pill" onclick="loadTours('pilgrimage')">Pilgrimages</button>
+                </div>
+                <div id="toursList" class="admin-table-wrap"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Accommodations ===== -->
+            <section class="admin-pane" data-pane="accommodations">
+                <h2>Accommodations</h2>
+                <div class="filter-row">
+                    <button class="filter-pill active" onclick="loadAccommodations('')">All</button>
+                    <button class="filter-pill" onclick="loadAccommodations('false')">Pending verification</button>
+                    <button class="filter-pill" onclick="loadAccommodations('true')">Verified</button>
+                </div>
+                <div id="accList" class="admin-table-wrap"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Events ===== -->
+            <section class="admin-pane" data-pane="events">
+                <h2>📅 Scheduled Departures</h2>
+                <p class="pane-help" style="background:#d4f4dd; border:1px solid #a8dab5; padding:0.75rem 1rem; border-radius:8px; color:#1e6b2e;">
+                    ✅ <strong>This is the page that makes tours bookable.</strong> Each departure is a dated run of a tour from your catalogue.
+                    The moment you click <strong>Create Event</strong> below, it appears on the <strong>homepage</strong>, the <strong>Group Tours page</strong>, and every <strong>tourist's dashboard</strong> — no other step needed.
+                </p>
+
+                <details class="invite-card" id="newEventCard" open>
+                    <summary id="eventFormSummary">➕ Create a new departure</summary>
+                    <form class="admin-form" onsubmit="submitNewEvent(event)" novalidate>
+                        <input type="hidden" id="ev_id" value="">
+                        <div class="grid-2">
+                            <label>Tour from catalogue *
+                                <select id="ev_trek_id" required>
+                                    <option value="">Loading tours…</option>
+                                </select>
+                            </label>
+                            <label>Lead Guide *
+                                <select id="ev_lead_guide_user_id" required>
+                                    <option value="">Loading staff…</option>
+                                </select>
+                            </label>
+                            <label>Event Title *
+                                <input id="ev_title" required placeholder="e.g. Druk Path Spring Group Trek">
+                            </label>
+                            <label>Capacity (max participants) *
+                                <input type="number" id="ev_capacity" min="1" max="100" value="10" required>
+                            </label>
+                            <label>Start Date *
+                                <input type="date" id="ev_start_date" required>
+                            </label>
+                            <label>End Date *
+                                <input type="date" id="ev_end_date" required>
+                            </label>
+                            <label>Per-person Fee (Nu.) *
+                                <input type="number" id="ev_per_person_fee" min="0" step="50" required placeholder="6500">
+                            </label>
+                            <label>Meeting Point
+                                <input id="ev_meeting_point" placeholder="e.g. Drukgyel Dzong gate">
+                            </label>
+                            <label>Reporting Time
+                                <input type="time" id="ev_reporting_time">
+                            </label>
+                            <label>Event Contact Phone (optional override)
+                                <input id="ev_contact_phone" placeholder="Defaults to operator support phone">
+                            </label>
+                            <label>⭐ Featured Guest / Celebrity (optional)
+                                <input id="ev_featured_guest" placeholder="e.g. Kezang Dorji (or two names)">
+                            </label>
+                        </div>
+                        <label>⭐ Guest — known for / what they'll do (optional)
+                            <textarea id="ev_featured_guest_role" rows="3" placeholder="Describe the guest — who they are and what they'll do on the trek. e.g. Award-winning Bhutanese singer; will perform an evening campfire concert and join guests for the Jomolhari base-camp leg."></textarea>
+                        </label>
+                        <label>Description
+                            <textarea id="ev_description" rows="3" placeholder="Tell participants about this departure…"></textarea>
+                        </label>
+                        <label>What's included
+                            <textarea id="ev_includes" rows="2" placeholder="Guide, meals, camping, transport, permits…"></textarea>
+                        </label>
+                        <label>What's not included
+                            <textarea id="ev_excludes" rows="2" placeholder="Personal trekking gear, insurance, tips…"></textarea>
+                        </label>
+                        <div class="admin-form-actions">
+                            <button type="submit" class="btn btn-primary btn-large" id="createEventBtn">📅 Create Event</button>
+                            <button type="button" class="btn btn-outline-primary" id="cancelEventEditBtn" onclick="resetEventForm()" style="display:none">Cancel edit</button>
+                            <span id="newEventMessage" class="form-message"></span>
+                        </div>
+                    </form>
+                </details>
+
+                <h3 style="margin-top:1.5rem">Scheduled departures</h3>
+                <div id="evtList" class="admin-table-wrap"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Bookings ===== -->
+            <section class="admin-pane" data-pane="bookings">
+                <h2>Accommodation Bookings</h2>
+                <div class="filter-row">
+                    <button class="filter-pill active" onclick="loadBookings('')">All</button>
+                    <button class="filter-pill" onclick="loadBookings('pending')">Pending</button>
+                    <button class="filter-pill" onclick="loadBookings('confirmed')">Confirmed</button>
+                    <button class="filter-pill" onclick="loadBookings('cancelled')">Cancelled</button>
+                    <button class="filter-pill" onclick="loadBookings('completed')">Completed</button>
+                </div>
+                <div id="bkList" class="admin-table-wrap"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Users ===== -->
+            <section class="admin-pane" data-pane="users">
+                <h2>Users</h2>
+                <div class="filter-row">
+                    <button class="filter-pill active" onclick="loadUsers('')">All</button>
+                    <button class="filter-pill" onclick="loadUsers('tourist')">Tourist</button>
+                    <button class="filter-pill" onclick="loadUsers('local_tourist')">Local Tourist</button>
+                    <button class="filter-pill" onclick="loadUsers('host')">Host</button>
+                    <button class="filter-pill" onclick="loadUsers('trek_organiser')">Staff</button>
+                    <button class="filter-pill" onclick="loadUsers('admin')">Admin</button>
+                </div>
+                <div id="userList" class="admin-table-wrap"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Images ===== -->
+            <section class="admin-pane" data-pane="images">
+                <h2>Master Images</h2>
+                <p class="pane-help">Images shown across the public site (homepage banners, dzongkhag pages, etc.). Upload via API or drop a file below.</p>
+                <form class="admin-form" onsubmit="uploadImage(event)" enctype="multipart/form-data">
+                    <div class="grid-2">
+                        <label>Image File <input type="file" id="imageFile" accept="image/*" required></label>
+                        <label>Section
+                            <select id="imageSection" required>
+                                <option value="">Select section</option>
+                                <option value="homepage">Homepage</option>
+                                <option value="route">Trek Route</option>
+                                <option value="dzongkhag">Dzongkhag</option>
+                                <option value="accommodation">Accommodation</option>
+                                <option value="pilgrimage">Pilgrimage</option>
+                            </select>
+                        </label>
+                    </div>
+                    <label>Description <textarea id="imageDescription" rows="2"></textarea></label>
+                    <div class="admin-form-actions">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                        <span id="imageMessage" class="form-message"></span>
+                    </div>
+                </form>
+                <h3 style="margin-top:1.5rem">Uploaded images</h3>
+                <div id="imagesList" class="images-grid"><p style="color:#888">Loading…</p></div>
+            </section>
+
+            <!-- ===== Trek Moments ===== -->
+            <section class="admin-pane" data-pane="moments">
+                <h2>📸 Trek Moments</h2>
+                <p class="pane-help">Post photo highlights from completed treks. These appear in the public <strong>Trek Moments</strong> gallery and on the homepage — your curated showcase of what TrekNest trips look like.</p>
+
+                <details class="invite-card" id="momentFormCard" open>
+                    <summary>➕ Post a new moment</summary>
+                    <form class="admin-form" onsubmit="submitMoment(event)" novalidate>
+                        <label>Photo *
+                            <input type="file" id="mo_image_file" accept="image/*" onchange="uploadMomentImage(event)">
+                            <input type="hidden" id="mo_image_url">
+                            <div id="mo_preview" style="display:none; margin-top:0.5rem">
+                                <img id="mo_preview_img" alt="" style="max-height:160px; border-radius:8px; display:block">
+                                <small id="mo_upload_status" style="display:block; margin-top:0.3rem"></small>
+                            </div>
+                        </label>
+                        <label>Caption
+                            <textarea id="mo_caption" rows="2" placeholder="e.g. Sunrise over Jomolhari base camp — Spring 2026 group"></textarea>
+                        </label>
+                        <label>Related tour (optional)
+                            <select id="mo_trek_id"><option value="">— none —</option></select>
+                        </label>
+                        <div class="admin-form-actions">
+                            <button type="submit" class="btn btn-primary">Post Moment</button>
+                            <span id="momentMessage" class="form-message"></span>
+                        </div>
+                    </form>
+                </details>
+
+                <h3 style="margin-top:1.5rem">Posted moments</h3>
+                <div id="momentsList" class="moments-grid" style="padding:0"><p style="color:#888">Loading…</p></div>
+            </section>
+        </main>
+    </section>
+
+    <!-- Accommodation detail modal (admin review before verify/delete) -->
+    <div id="accViewModal" class="modal">
+        <div class="modal-content trek-detail-modal">
+            <span class="close" onclick="document.getElementById('accViewModal').classList.remove('show')">&times;</span>
+            <div id="accViewContent"></div>
+        </div>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/admin-handler.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Tours - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/booking-form.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html" class="active">Group Tours</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header page-header-with-logo">
+        <div class="page-logo">
+            <svg viewBox="0 0 96 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="96" height="64">
+                <!-- Sky gradient & sun -->
+                <defs>
+                    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffe7c4"/>
+                        <stop offset="100%" stop-color="#ffd28a"/>
+                    </linearGradient>
+                    <linearGradient id="farPeakGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#a8b6c5"/>
+                        <stop offset="100%" stop-color="#7d8c9d"/>
+                    </linearGradient>
+                    <linearGradient id="midPeakGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#5d7185"/>
+                        <stop offset="100%" stop-color="#3e5067"/>
+                    </linearGradient>
+                    <linearGradient id="nearPeakGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#2c3e50"/>
+                        <stop offset="100%" stop-color="#1a2535"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="74" cy="18" r="8" fill="#ffd96b"/>
+                <circle cx="74" cy="18" r="11" fill="#ffd96b" opacity="0.25"/>
+                <!-- Far range -->
+                <path fill="url(#farPeakGrad)" d="M0 56 L20 26 L28 34 L42 14 L62 56z"/>
+                <path fill="#ffffff" d="m37 21 5-7 5 7-2.7-1.6-2.3 1.4-2.3-1.4z"/>
+                <!-- Mid range -->
+                <path fill="url(#midPeakGrad)" d="M16 60 L34 32 L42 40 L56 22 L82 60z"/>
+                <path fill="#ffffff" d="m51 30 5-8 5 8-2.7-1.7-2.3 1.4-2.3-1.4z"/>
+                <!-- Near range -->
+                <path fill="url(#nearPeakGrad)" d="M0 64 L18 38 L26 46 L40 28 L66 64z"/>
+                <path fill="#ffffff" d="m35 36 5-8 5 8-2.7-1.7-2.3 1.4-2.3-1.4z"/>
+                <!-- Pine accents on near range -->
+                <path fill="#1a2535" d="M14 64 V58 L12 60 L14 58 L16 60z M22 64 V60 L20 62 L22 60 L24 62z"/>
+                <!-- Cloud -->
+                <ellipse cx="22" cy="14" rx="9" ry="2.4" fill="#ffffff" opacity="0.85"/>
+                <ellipse cx="28" cy="12" rx="6" ry="2" fill="#ffffff" opacity="0.7"/>
+            </svg>
+        </div>
+        <div>
+            <h1>Group Tours</h1>
+            <p>Treks, hikes, and pilgrimages — fully organised by TrekNest Bhutan. One fee covers everything.</p>
+        </div>
+    </section>
+
+    <section class="trek-search-panel">
+        <form id="eventSearchForm" class="trek-search-form" onsubmit="handleEventSearch(event)">
+            <div class="search-grid">
+                <div class="search-field">
+                    <label for="evTourType">🗺️ Type</label>
+                    <select id="evTourType">
+                        <option value="">All Tour Types</option>
+                        <option value="trek">⛰️ Trek</option>
+                        <option value="hike">🥾 Day Hike</option>
+                        <option value="pilgrimage">🛕 Pilgrimage</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="evRegion">🌏 Region</label>
+                    <select id="evRegion">
+                        <option value="">All Regions</option>
+                        <option value="bhutan">Inside Bhutan</option>
+                        <option value="international">International</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="evDzongkhag">📍 Dzongkhag (Bhutan)</label>
+                    <select id="evDzongkhag">
+                        <option value="">All Dzongkhags</option>
+                        <option value="Paro">Paro</option>
+                        <option value="Thimphu">Thimphu</option>
+                        <option value="Punakha">Punakha</option>
+                        <option value="Wangdue Phodrang">Wangdue Phodrang</option>
+                        <option value="Bumthang">Bumthang</option>
+                        <option value="Gasa">Gasa</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="evDifficulty">💪 Difficulty</label>
+                    <select id="evDifficulty">
+                        <option value="">Any Difficulty</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Difficult">Difficult</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary btn-large">🔍 Search Tours</button>
+                <button type="button" class="btn btn-outline-primary" onclick="resetEventSearch()">Reset</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="trek-results-section">
+        <div class="results-header">
+            <h2 id="evResultsHeading">Upcoming Group Tours</h2>
+            <p id="evResultsCount" class="results-count"></p>
+        </div>
+        <div class="treks-grid" id="eventsContainer">
+            <p class="treks-empty-state">Loading tours…</p>
+        </div>
+    </section>
+
+    <!-- Event Detail Modal -->
+    <div id="eventDetailModal" class="modal">
+        <div class="modal-content trek-detail-modal">
+            <span class="close" onclick="closeEventModal()">&times;</span>
+            <div id="eventDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/group-treks-handler.js"></script>
+</body>
+</html>

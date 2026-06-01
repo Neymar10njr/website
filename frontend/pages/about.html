@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About TrekNest Bhutan</title>
+    <meta name="description" content="TrekNest Bhutan is a Thimphu-based tour operator organising guided treks, day hikes, and Buddhist pilgrimages across Bhutan and the wider Himalayan region.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="content-page">
+        <h1>About TrekNest Bhutan</h1>
+        <p class="lead">A Thimphu-based tour operator specialising in guided treks, day hikes, and Buddhist pilgrimages across Bhutan.</p>
+
+        <h2>Who we are</h2>
+        <p>TrekNest Bhutan is a small, dedicated tour operator built around one belief: that the experience of trekking and pilgrimage in Bhutan should be authentic, well-organised, and led by people who know the land. We are not a marketplace listing strangers — every tour you book with us is planned by our team and led by one of our certified Bhutanese guides.</p>
+
+        <h2>What we organise</h2>
+        <ul>
+            <li><strong>Treks</strong> — multi-day journeys through Bhutan's dzongkhags, from the iconic Druk Path to the legendary Snowman Trek.</li>
+            <li><strong>Day hikes</strong> — accessible single-day walks around Paro, Thimphu, and Punakha for travellers with limited time.</li>
+            <li><strong>Pilgrimages</strong> — guided visits to the sacred sites of Bhutanese Buddhism, including Taktsang, the Bumthang circuit, the Punakha sacred valley, and Phobjikha.</li>
+            <li><strong>Accommodation</strong> — we partner with verified local guest houses along every route so you sleep close to the mountains, not in a generic city hotel.</li>
+        </ul>
+
+        <h2>How a TrekNest tour works</h2>
+        <ol>
+            <li>You browse our scheduled departures on the <a href="group-treks.html">Group Tours</a> page or pick a trek you'd like to do.</li>
+            <li>You reserve your spot online. We email you a booking reference.</li>
+            <li>We follow up with payment instructions (currently bank transfer or in-person on arrival).</li>
+            <li>On the trek day, your lead guide meets you at the agreed meeting point with all logistics handled — permits, transport, meals, camping gear where needed.</li>
+            <li>You walk. We carry the rest.</li>
+        </ol>
+
+        <h2>Why a single-operator model</h2>
+        <p>Many trekking platforms are marketplaces of independent guides. We chose a different path: TrekNest Bhutan is the operator. Every tour is planned and led by our small team, vetted by us, with the Tourism Council of Bhutan licence we hold as a company. This means:</p>
+        <ul>
+            <li><strong>One point of accountability</strong> — if something goes wrong, you call us, not a random person.</li>
+            <li><strong>Consistent quality</strong> — every group benefits from the same standard of guiding, gear, and safety.</li>
+            <li><strong>Trained local guides</strong> — all our staff are TCB-certified Bhutanese guides with wilderness first-aid training.</li>
+        </ul>
+
+        <h2>Our team</h2>
+        <div id="aboutTeamGrid" class="team-grid" style="margin-top:1rem; padding:0">
+            <p style="grid-column:1/-1; color:#888">Loading team…</p>
+        </div>
+
+        <p class="meta">Want to walk with us? See <a href="group-treks.html">upcoming departures</a> or <a href="contact.html">get in touch</a>.</p>
+    </main>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/footer.js"></script>
+    <script>
+    (async function loadTeam() {
+        const grid = document.getElementById('aboutTeamGrid');
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/admin/team');
+            const team = await r.json();
+            if (!Array.isArray(team) || !team.length) {
+                grid.innerHTML = '<p style="grid-column:1/-1; color:#888">Our guide team is being onboarded.</p>';
+                return;
+            }
+            grid.innerHTML = team.map(m => `
+                <div class="team-card">
+                    <div class="team-photo">${m.photo_url ? `<img src="${m.photo_url}" alt="${m.display_name}" onerror="this.parentElement.textContent='🧑‍🦱'">` : '🧑‍🦱'}</div>
+                    <div class="team-name">${m.display_name || ''}</div>
+                    <div class="team-role">${m.role_title || 'Trek Guide'}</div>
+                    ${m.bio ? `<div class="team-bio">${m.bio}</div>` : ''}
+                    <div class="team-meta">${m.years_experience ? m.years_experience + ' yrs experience' : ''}${m.languages ? ' · ' + m.languages : ''}</div>
+                </div>
+            `).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1; color:#888">Team info unavailable.</p>';
+        }
+    })();
+    </script>
+</body>
+</html>

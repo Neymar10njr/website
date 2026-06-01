@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organiser Dashboard - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/booking-form.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="dashboard-organiser.html" class="active">Dashboard</a></li>
+                <li><a href="account.html">My Account</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+        <div class="dashboard-header">
+            <h1>Welcome, <span id="userName">Organiser</span> 🥾</h1>
+            <p>Plan group treks and manage participants. You handle logistics — they pay one fee.</p>
+            <span class="role-badge">Trek Organiser</span>
+        </div>
+
+        <h2 style="margin-top:2rem">📅 Create a New Group Trek</h2>
+        <form id="newEventForm" class="host-form" onsubmit="submitEvent(event)">
+            <div id="eventFormMessage" class="host-form-message"></div>
+
+            <div class="form-row">
+                <div>
+                    <label for="evTrek">Trek route *</label>
+                    <select id="evTrek" required></select>
+                </div>
+                <div>
+                    <label for="evTitle">Event title *</label>
+                    <input type="text" id="evTitle" placeholder="e.g. Druk Path Spring Group Trek" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="evStart">Start date *</label>
+                    <input type="date" id="evStart" required>
+                </div>
+                <div>
+                    <label for="evEnd">End date *</label>
+                    <input type="date" id="evEnd" required>
+                </div>
+                <div>
+                    <label for="evCapacity">Capacity (max participants) *</label>
+                    <input type="number" id="evCapacity" min="1" max="100" value="10" required>
+                </div>
+                <div>
+                    <label for="evFee">Per-person fee (Nu.) *</label>
+                    <input type="number" id="evFee" min="0" step="50" placeholder="6500" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="evMeeting">Meeting point</label>
+                    <input type="text" id="evMeeting" placeholder="e.g. Drukgyel Dzong gate">
+                </div>
+                <div>
+                    <label for="evReportingTime">Reporting time</label>
+                    <input type="time" id="evReportingTime">
+                </div>
+                <div>
+                    <label for="evPhone">Contact phone</label>
+                    <input type="tel" id="evPhone" placeholder="+975-...">
+                </div>
+            </div>
+
+            <div>
+                <label for="evDescription">Description</label>
+                <textarea id="evDescription" placeholder="Tell participants about the trek experience..."></textarea>
+            </div>
+
+            <div class="form-row" style="margin-top:1rem">
+                <div>
+                    <label for="evIncludes">What's included</label>
+                    <textarea id="evIncludes" placeholder="Guide, meals, camping, transport, permits"></textarea>
+                </div>
+                <div>
+                    <label for="evExcludes">What's not included</label>
+                    <textarea id="evExcludes" placeholder="Personal trekking gear, insurance, tips"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem">➕ Create Event</button>
+        </form>
+
+        <h2 style="margin-top:2.5rem">📋 My Events</h2>
+        <div id="myEventsList" class="bookings-list">
+            <p style="color:#666">Loading your events…</p>
+        </div>
+    </section>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/organiser-handler.js"></script>
+    <script>
+        const user = requireAuth(['trek_organiser']);
+        if (user) {
+            document.getElementById('userName').textContent = user.first_name || user.username;
+            document.getElementById('evPhone').value = user.phone || '';
+            initOrganiser(user);
+        }
+    </script>
+</body>
+</html>

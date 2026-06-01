@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Room - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/booking-form.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="booking-section">
+        <div class="booking-container">
+            <h2>Confirm Your Booking</h2>
+
+            <div id="roomInfoCard" class="room-info-card">
+                <p>Loading room details...</p>
+            </div>
+
+            <form id="bookingForm" class="booking-form" onsubmit="submitBooking(event)">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="checkIn">Check-in Date</label>
+                        <input type="date" id="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOut">Check-out Date</label>
+                        <input type="date" id="checkOut" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" min="1" value="2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="specialRequests">Special Requests (optional)</label>
+                    <textarea id="specialRequests" rows="3" placeholder="Late check-in, dietary needs, etc."></textarea>
+                </div>
+
+                <div class="price-summary">
+                    <h3>💰 Price Summary</h3>
+                    <div class="price-line">
+                        <span>Price per night</span>
+                        <span id="pricePerNight">Nu. 0</span>
+                    </div>
+                    <div class="price-line">
+                        <span>Number of nights</span>
+                        <span id="numNights">0</span>
+                    </div>
+                    <div class="price-line price-total">
+                        <span>Total Amount</span>
+                        <span id="totalPrice">Nu. 0</span>
+                    </div>
+                </div>
+
+                <div id="bookingError" class="auth-error"></div>
+
+                <button type="submit" id="confirmBtn" class="btn btn-primary btn-large full-width">✅ Confirm Booking</button>
+                <a href="accommodations.html" class="btn btn-outline-primary full-width" style="margin-top: 0.75rem; text-align: center;">← Back to Stays</a>
+            </form>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/booking-handler.js"></script>
+</body>
+</html>

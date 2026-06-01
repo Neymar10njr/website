@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="account.html" class="active">My Account</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="account-section">
+        <div class="account-shell">
+            <header class="account-header">
+                <h1>My Account</h1>
+                <p>Update your profile, contact info, and password. Your username and email cannot be changed here — contact admin if you need to update them.</p>
+                <a id="dashboardLink" class="btn btn-outline-primary btn-small" href="#">← Back to dashboard</a>
+            </header>
+
+            <!-- ===== Profile ===== -->
+            <section class="account-card">
+                <h2>Profile</h2>
+
+                <div class="avatar-row">
+                    <div class="avatar-preview" id="avatarPreview">🧑</div>
+                    <div class="avatar-controls">
+                        <label class="btn btn-outline-primary btn-small" for="avatarFile" style="cursor:pointer">📷 Upload profile picture</label>
+                        <input type="file" id="avatarFile" accept="image/jpeg,image/png,image/webp" onchange="uploadAvatar(event)" style="display:none">
+                        <p class="muted">JPG, PNG or WebP. Shown on your dashboard and across the site.</p>
+                        <span id="avatarStatus" class="form-message"></span>
+                    </div>
+                </div>
+
+                <form id="profileForm" onsubmit="saveProfile(event)" class="admin-form" style="border:none; padding:0; box-shadow:none">
+                    <div class="grid-2">
+                        <label>Username
+                            <input id="acc_username" disabled style="background:#f5f5f5">
+                        </label>
+                        <label>Email
+                            <input id="acc_email" type="email" disabled style="background:#f5f5f5">
+                        </label>
+                        <label>First Name
+                            <input id="acc_first_name">
+                        </label>
+                        <label>Last Name
+                            <input id="acc_last_name">
+                        </label>
+                        <label>Phone (with country code)
+                            <input id="acc_phone" placeholder="+975-...">
+                        </label>
+                        <label>Account type
+                            <input id="acc_user_type" disabled style="background:#f5f5f5">
+                        </label>
+                    </div>
+
+                    <div id="staffSection" style="display:none">
+                        <h3 style="margin-top:1rem">Public profile (shown on Our Team)</h3>
+                        <div class="grid-2">
+                            <label>Role title <span class="muted">(set by admin)</span>
+                                <input id="acc_role_title" disabled style="background:#f5f5f5">
+                            </label>
+                            <label>Languages
+                                <input id="acc_languages" placeholder="Dzongkha, English, Hindi">
+                            </label>
+                            <label>Photo URL
+                                <input id="acc_photo_url" placeholder="https://...">
+                            </label>
+                        </div>
+                        <label>Bio
+                            <textarea id="acc_bio" rows="3" placeholder="A short bio shown on the public team page."></textarea>
+                        </label>
+                    </div>
+
+                    <div class="admin-form-actions">
+                        <button type="submit" class="btn btn-primary">Save profile</button>
+                        <span id="profileMessage" class="form-message"></span>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ===== Password ===== -->
+            <section class="account-card">
+                <h2>Change password</h2>
+                <p class="muted" style="font-size:0.9rem">If you forgot your current password, log out and use the "Forgot password?" link instead.</p>
+                <form id="pwForm" onsubmit="savePassword(event)" class="admin-form" style="border:none; padding:0; box-shadow:none">
+                    <div class="grid-2">
+                        <label>Current password
+                            <input type="password" id="acc_old_password" required autocomplete="current-password">
+                        </label>
+                        <label>New password (6+ characters)
+                            <input type="password" id="acc_new_password" required minlength="6" autocomplete="new-password">
+                        </label>
+                    </div>
+                    <label>Confirm new password
+                        <input type="password" id="acc_confirm_password" required minlength="6" autocomplete="new-password">
+                    </label>
+                    <div class="admin-form-actions">
+                        <button type="submit" class="btn btn-primary">Update password</button>
+                        <span id="pwMessage" class="form-message"></span>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </section>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script>
+        const me = requireAuth();
+        if (me) {
+            document.getElementById('dashboardLink').href = (DASHBOARD_BY_TYPE && DASHBOARD_BY_TYPE[me.user_type]) || 'index.html';
+            loadProfile();
+        }
+
+        async function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const status = document.getElementById('avatarStatus');
+            const preview = document.getElementById('avatarPreview');
+            status.className = 'form-message';
+            status.style.color = '#1565c0';
+            status.textContent = '⏳ Uploading…';
+            const fd = new FormData();
+            fd.append('image', file);
+            try {
+                const r = await authFetch(API_BASE_URL + '/auth/upload-avatar', { method: 'POST', body: fd });
+                const data = await r.json();
+                if (!r.ok) {
+                    status.style.color = '#d33';
+                    status.textContent = '❌ ' + (data.error || 'Upload failed');
+                    return;
+                }
+                preview.innerHTML = `<img src="${data.avatar_url}" alt="profile picture">`;
+                status.style.color = '#1e7d32';
+                status.textContent = '✅ Profile picture updated';
+                // keep this tab's session copy in sync
+                const stored = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                stored.avatar_url = data.avatar_url;
+                sessionStorage.setItem('currentUser', JSON.stringify(stored));
+            } catch (e) {
+                status.style.color = '#d33';
+                status.textContent = '❌ Network error: ' + e.message;
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                const r = await authFetch(API_BASE_URL + '/auth/me');
+                const data = await r.json();
+                if (!r.ok) return;
+                document.getElementById('acc_username').value = data.username || '';
+                document.getElementById('acc_email').value = data.email || '';
+                document.getElementById('acc_first_name').value = data.first_name || '';
+                document.getElementById('acc_last_name').value = data.last_name || '';
+                document.getElementById('acc_phone').value = data.phone || '';
+                if (data.avatar_url) {
+                    document.getElementById('avatarPreview').innerHTML =
+                        `<img src="${data.avatar_url}" alt="profile picture">`;
+                }
+                document.getElementById('acc_user_type').value = ({
+                    tourist: 'Tourist (International)',
+                    local_tourist: 'Local Tourist (Bhutanese)',
+                    host: 'Guest House Owner',
+                    trek_organiser: 'Staff (Trek Organiser)',
+                    admin: 'Administrator'
+                })[data.user_type] || data.user_type;
+
+                if (data.user_type === 'trek_organiser') {
+                    document.getElementById('staffSection').style.display = 'block';
+                    const sp = data.staff_profile || {};
+                    document.getElementById('acc_role_title').value = sp.role_title || '';
+                    document.getElementById('acc_languages').value = sp.languages || '';
+                    document.getElementById('acc_photo_url').value = sp.photo_url || '';
+                    document.getElementById('acc_bio').value = sp.bio || '';
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        async function saveProfile(event) {
+            event.preventDefault();
+            const msg = document.getElementById('profileMessage');
+            msg.textContent = ''; msg.className = 'form-message';
+            const payload = {
+                first_name: document.getElementById('acc_first_name').value.trim(),
+                last_name: document.getElementById('acc_last_name').value.trim(),
+                phone: document.getElementById('acc_phone').value.trim()
+            };
+            if (me.user_type === 'trek_organiser') {
+                payload.staff_profile = {
+                    bio: document.getElementById('acc_bio').value.trim(),
+                    photo_url: document.getElementById('acc_photo_url').value.trim(),
+                    languages: document.getElementById('acc_languages').value.trim()
+                };
+            }
+            try {
+                const r = await authFetch(API_BASE_URL + '/auth/me', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await r.json();
+                if (!r.ok) {
+                    msg.className = 'form-message error';
+                    msg.textContent = data.error || 'Failed to save';
+                    return;
+                }
+                msg.className = 'form-message success';
+                msg.textContent = '✅ Saved.';
+
+                const stored = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                stored.first_name = payload.first_name;
+                stored.last_name = payload.last_name;
+                stored.phone = payload.phone;
+                sessionStorage.setItem('currentUser', JSON.stringify(stored));
+            } catch (e) {
+                msg.className = 'form-message error';
+                msg.textContent = 'Network error: ' + e.message;
+            }
+        }
+
+        async function savePassword(event) {
+            event.preventDefault();
+            const msg = document.getElementById('pwMessage');
+            msg.textContent = ''; msg.className = 'form-message';
+            const oldPw = document.getElementById('acc_old_password').value;
+            const newPw = document.getElementById('acc_new_password').value;
+            const confirmPw = document.getElementById('acc_confirm_password').value;
+            if (newPw !== confirmPw) {
+                msg.className = 'form-message error';
+                msg.textContent = 'New password and confirmation do not match.';
+                return;
+            }
+            if (newPw === oldPw) {
+                msg.className = 'form-message error';
+                msg.textContent = 'New password must be different from current password.';
+                return;
+            }
+            try {
+                const r = await authFetch(API_BASE_URL + '/auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPw, new_password: newPw })
+                });
+                const data = await r.json();
+                if (!r.ok) {
+                    msg.className = 'form-message error';
+                    msg.textContent = data.error || 'Failed';
+                    return;
+                }
+                msg.className = 'form-message success';
+                msg.textContent = '✅ Password updated.';
+                document.getElementById('pwForm').reset();
+            } catch (e) {
+                msg.className = 'form-message error';
+                msg.textContent = 'Network error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Treks - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🏔️ TrekNest Bhutan</h1>
+                <p>Discover. Trek. Experience.</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html" class="active">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <h1>Explore Bhutan's Trekking Routes</h1>
+        <p>Tell us where you'd like to go and we'll find the perfect trek for you</p>
+    </section>
+
+    <!-- Search Panel -->
+    <section class="trek-search-panel">
+        <form id="trekSearchForm" class="trek-search-form" onsubmit="handleTrekSearch(event)">
+            <div class="search-grid">
+                <div class="search-field">
+                    <label for="dzongkhagFilter">📍 Region (Dzongkhag)</label>
+                    <select id="dzongkhagFilter">
+                        <option value="">All Regions</option>
+                        <option value="Paro">Paro</option>
+                        <option value="Thimphu">Thimphu</option>
+                        <option value="Punakha">Punakha</option>
+                        <option value="Wangdue Phodrang">Wangdue Phodrang</option>
+                        <option value="Bumthang">Bumthang</option>
+                        <option value="Gasa">Gasa</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label for="difficultyFilter">💪 Difficulty</label>
+                    <select id="difficultyFilter">
+                        <option value="">Any Difficulty</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Difficult">Difficult</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label for="durationFilter">⏱️ Duration</label>
+                    <select id="durationFilter">
+                        <option value="">Any Duration</option>
+                        <option value="1-3">1-3 Days</option>
+                        <option value="4-6">4-6 Days</option>
+                        <option value="7+">7+ Days</option>
+                    </select>
+                </div>
+
+                <div class="search-field">
+                    <label for="searchInput">🔎 Trek Name</label>
+                    <input type="text" id="searchInput" placeholder="e.g. Druk Path">
+                </div>
+            </div>
+
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary btn-large">🔍 Search Treks</button>
+                <button type="button" class="btn btn-outline-primary" onclick="resetSearch()">Reset</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Results -->
+    <section class="trek-results-section">
+        <div class="results-header">
+            <h2 id="resultsHeading">All Available Treks</h2>
+            <p id="resultsCount" class="results-count"></p>
+        </div>
+
+        <div class="treks-grid" id="treksGrid">
+            <p class="treks-empty-state">Loading treks...</p>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Trek Detail Modal -->
+    <div id="trekDetailModal" class="modal">
+        <div class="modal-content trek-detail-modal">
+            <span class="close" onclick="closeTrekModal()">&times;</span>
+            <div id="trekDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/reviews-widget.js"></script>
+    <script src="../js/trek-handler.js"></script>
+</body>
+</html>

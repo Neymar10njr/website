@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact TrekNest Bhutan</title>
+    <meta name="description" content="Get in touch with TrekNest Bhutan — call, WhatsApp, or email for trekking enquiries and bookings.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="content-page">
+        <h1>Contact Us</h1>
+        <p class="lead">We answer enquiries within one business day. For urgent matters, WhatsApp is fastest.</p>
+
+        <div class="contact-grid" id="contactGrid">
+            <p style="grid-column:1/-1; color:#888">Loading contact info…</p>
+        </div>
+
+        <h2>How to reach us about a specific booking</h2>
+        <p>If you have a booking reference (it looks like <code>TNB-EVT-0042-P0117</code> or a numeric room booking ID), quote it when you contact us — it lets our team pull up your reservation immediately.</p>
+
+        <h2>Office hours</h2>
+        <p id="hoursLine">9:00 AM – 6:00 PM Bhutan Time (BST), Monday through Saturday. Sundays we're usually out walking.</p>
+
+        <h2>Press, partnership, or work enquiries</h2>
+        <p>For media requests, B2B partnership proposals, or to apply as a guide, please email us directly — we read everything and reply to relevant enquiries within a few days.</p>
+
+        <p class="meta">Looking for trek info? Browse <a href="group-treks.html">group tours</a> or <a href="treks.html">independent treks</a> instead.</p>
+    </main>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/footer.js"></script>
+    <script>
+    (async function loadContact() {
+        const grid = document.getElementById('contactGrid');
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/admin/operator');
+            if (!r.ok) throw new Error('no op');
+            const op = await r.json();
+            const phone = op.support_phone || '';
+            const cleanPhone = phone.replace(/[^\d+]/g, '');
+            const wa = (op.whatsapp_number || op.support_phone || '').replace(/\D/g, '');
+            const email = op.support_email || '';
+
+            grid.innerHTML = `
+                ${phone ? `<a href="tel:${cleanPhone}" class="contact-card">
+                    <div class="label">📞 Phone</div>
+                    <div class="value">${phone}</div>
+                    <div class="sub">Tap to call</div>
+                </a>` : ''}
+                ${wa ? `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" class="contact-card">
+                    <div class="label">💬 WhatsApp</div>
+                    <div class="value">${op.whatsapp_number || phone}</div>
+                    <div class="sub">Fastest response</div>
+                </a>` : ''}
+                ${email ? `<a href="mailto:${email}" class="contact-card">
+                    <div class="label">✉️ Email</div>
+                    <div class="value">${email}</div>
+                    <div class="sub">Reply within 1 business day</div>
+                </a>` : ''}
+                ${op.office_address ? `<div class="contact-card">
+                    <div class="label">📍 Office</div>
+                    <div class="value">${op.office_address}</div>
+                    <div class="sub">Visit by appointment</div>
+                </div>` : ''}
+                ${op.website ? `<a href="${op.website}" target="_blank" rel="noopener" class="contact-card">
+                    <div class="label">🌐 Website</div>
+                    <div class="value">${op.website.replace(/^https?:\/\//, '')}</div>
+                </a>` : ''}
+                ${op.licence_number ? `<div class="contact-card">
+                    <div class="label">🛂 Licence</div>
+                    <div class="value">${op.licence_number}</div>
+                    <div class="sub">Tourism Council of Bhutan</div>
+                </div>` : ''}
+            `;
+            if (op.business_hours) {
+                document.getElementById('hoursLine').textContent = op.business_hours + '. Sundays we\'re usually out walking.';
+            }
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1; color:#888">Contact info unavailable. Try again in a moment.</p>';
+        }
+    })();
+    </script>
+</body>
+</html>

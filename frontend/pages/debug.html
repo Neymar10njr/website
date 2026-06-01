@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Debug</title></head>
+<body>
+<h1>Debug page</h1>
+<div id="log" style="font-family: monospace; white-space: pre; background: #000; color: #0f0; padding: 1rem;"></div>
+<script>
+const log = document.getElementById('log');
+function l(msg) { log.textContent += msg + '\n'; console.log(msg); }
+window.onerror = (msg, src, line) => l('ERROR: ' + msg + ' at ' + src + ':' + line);
+
+l('1. Fetching API...');
+fetch('http://localhost:5000/api/treks')
+    .then(r => { l('2. API response status: ' + r.status); return r.json(); })
+    .then(data => {
+        l('3. Got ' + data.length + ' treks');
+        l('4. First trek: ' + JSON.stringify(data[0], null, 2));
+        l('5. image_url: ' + data[0].image_url);
+        const img = new Image();
+        img.onload = () => l('6. Test image loaded OK');
+        img.onerror = () => l('6. Test image FAILED to load');
+        img.src = data[0].image_url;
+    })
+    .catch(e => l('FETCH ERROR: ' + e.message));
+</script>
+</body>
+</html>

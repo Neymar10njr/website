@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Tourist Dashboard - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="dashboard-local.html" class="active">Dashboard</a></li>
+                <li><a href="account.html">My Account</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+        <div class="dashboard-header">
+            <h1>Kuzuzangpo, <span id="userName">Friend</span> 🇧🇹</h1>
+            <p>Discover trails in your own backyard — special rates for Bhutanese citizens.</p>
+            <span class="role-badge">Local Tourist (Bhutanese)</span>
+        </div>
+
+        <h2>Quick Actions</h2>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>🥾 Local Routes</h3>
+                <p>Treks across all 20 dzongkhags with local-pricing benefits.</p>
+                <a class="btn btn-primary" href="treks.html">Explore Treks</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>🏡 Homestays</h3>
+                <p>Authentic homestays and budget guesthouses.</p>
+                <a class="btn btn-primary" href="accommodations.html">View Stays</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>📅 My Bookings</h3>
+                <p>Track your weekend trips and group treks.</p>
+                <a class="btn btn-primary" href="profile.html">View Bookings</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>👥 Group Tours</h3>
+                <p>Join treks, hikes, and pilgrimages organised by TrekNest Bhutan.</p>
+                <a class="btn btn-primary" href="group-treks.html">Browse Tours</a>
+            </div>
+        </div>
+
+        <h2 style="margin-top:1.5rem">🥾 Upcoming Group Tours</h2>
+        <p style="color:#666; font-size:0.95rem;">Latest treks, hikes, and pilgrimages organised by TrekNest Bhutan. <a href="group-treks.html" style="color:var(--primary-color)">See all →</a></p>
+        <div id="upcomingEventsList" class="upcoming-events-grid">
+            <p style="color:#666">Loading upcoming tours…</p>
+        </div>
+
+        <h2 style="margin-top:2.5rem">📅 My Bookings</h2>
+        <link rel="stylesheet" href="../css/booking-form.css">
+        <div id="myBookingsList" class="bookings-list">
+            <p style="color:#666">Loading your bookings…</p>
+        </div>
+
+        <h2 style="margin-top:2.5rem">🥾 My Group Treks</h2>
+        <p style="color:#666; font-size:0.95rem;">Group treks you've joined. <a href="group-treks.html" style="color:var(--primary-color)">Browse more →</a></p>
+        <div id="myEventsList" class="bookings-list">
+            <p style="color:#666">Loading…</p>
+        </div>
+    </section>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/bookings-tracker.js"></script>
+    <script>
+        const user = requireAuth(['local_tourist']);
+        if (user) {
+            document.getElementById('userName').textContent = user.first_name || user.username;
+            loadUpcomingEvents();
+            loadMyBookings(user.user_id || user.id);
+            loadMyEvents();
+        }
+    </script>
+</body>
+</html>

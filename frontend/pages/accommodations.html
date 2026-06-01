@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accommodations - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html" class="active">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>Find Your Perfect Stay</h1>
+        <p>Comfortable guesthouses, lodges, and homestays along Bhutan's trekking routes</p>
+    </section>
+
+    <!-- Search Panel -->
+    <section class="trek-search-panel">
+        <form id="accSearchForm" class="trek-search-form" onsubmit="handleAccSearch(event)">
+            <div class="search-grid">
+                <div class="search-field">
+                    <label for="accDzongkhagFilter">📍 Region</label>
+                    <select id="accDzongkhagFilter">
+                        <option value="">All Regions</option>
+                        <option value="Paro">Paro</option>
+                        <option value="Thimphu">Thimphu</option>
+                        <option value="Punakha">Punakha</option>
+                        <option value="Wangdue Phodrang">Wangdue Phodrang</option>
+                        <option value="Bumthang">Bumthang</option>
+                        <option value="Gasa">Gasa</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="accRatingFilter">⭐ Min Rating</label>
+                    <select id="accRatingFilter">
+                        <option value="">Any Rating</option>
+                        <option value="3">3+ stars</option>
+                        <option value="4">4+ stars</option>
+                        <option value="4.5">4.5+ stars</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="accPriceFilter">💰 Max Price (Nu./night)</label>
+                    <select id="accPriceFilter">
+                        <option value="">Any Price</option>
+                        <option value="1000">Under 1,000</option>
+                        <option value="2000">Under 2,000</option>
+                        <option value="3500">Under 3,500</option>
+                        <option value="5000">Under 5,000</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="accSearchInput">🔎 Name</label>
+                    <input type="text" id="accSearchInput" placeholder="e.g. Druk Lodge">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary btn-large">🔍 Search Stays</button>
+                <button type="button" class="btn btn-outline-primary" onclick="resetAccSearch()">Reset</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Results -->
+    <section class="trek-results-section">
+        <div class="results-header">
+            <h2 id="accResultsHeading">All Available Stays</h2>
+            <p id="accResultsCount" class="results-count"></p>
+        </div>
+        <div class="treks-grid" id="accommodationContainer">
+            <p class="treks-empty-state">Loading accommodations...</p>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Accommodation Detail Modal -->
+    <div id="accDetailModal" class="modal">
+        <div class="modal-content trek-detail-modal">
+            <span class="close" onclick="closeAccModal()">&times;</span>
+            <div id="accDetailContent"></div>
+        </div>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/reviews-widget.js"></script>
+    <script src="../js/accommodations-handler.js"></script>
+</body>
+</html>

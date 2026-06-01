@@ -1,0 +1,40 @@
+# Caddy automatically handles TLS certs from Let's Encrypt for the domain.
+# In dev, set PUBLIC_DOMAIN=localhost or use the dev compose file.
+
+{$PUBLIC_DOMAIN:localhost} {
+    encode gzip
+
+    # Frontend assets (HTML/CSS/JS/images) — served by the nginx container
+    handle /api/* {
+        reverse_proxy backend:5000
+    }
+
+    handle /static/* {
+        reverse_proxy backend:5000
+    }
+
+    # Email links land on /reset-password and /verify-email — rewrite to the page
+    rewrite /reset-password /pages/reset-password.html
+    rewrite /forgot-password /pages/forgot-password.html
+
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    header {
+        # Security headers
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Remove server tokens
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}

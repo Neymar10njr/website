@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrekNest Bhutan - Discover Bhutan's Best Trekking Routes</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body class="home-layout">
+    <!-- Navigation (overlaid on hero, becomes solid on scroll) -->
+    <nav id="homeNav" class="navbar navbar-overlay">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🏔️ TrekNest Bhutan</h1>
+                <p>Discover. Trek. Experience.</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section (full-width image, title overlaid bottom-left) -->
+    <section class="hero-section hero-tall" id="heroSection">
+        <div class="hero-overlay"></div>
+        <div class="hero-content hero-content-bottom">
+            <h1>Trekking in Bhutan</h1>
+            <p>Explore the pristine mountain trails of the Land of the Dragon</p>
+            <div class="hero-search">
+                <input type="text" placeholder="Search treks by name or location..." id="heroSearch" onkeyup="searchTreksFromHero()">
+                <button class="btn btn-primary" onclick="window.location.href='treks.html'">Explore Now</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    // Master Images: if admin has uploaded a homepage banner, use it as the hero background.
+    (async function loadHeroImage() {
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/admin/images?section=homepage');
+            if (!r.ok) return;
+            const imgs = await r.json();
+            if (!imgs.length) return;
+            const url = imgs[0].image_path;
+            if (!url) return;
+            const hero = document.getElementById('heroSection');
+            if (hero) {
+                hero.style.backgroundImage = `linear-gradient(135deg, rgba(26,35,50,0.5), rgba(30,64,175,0.4)), url('${url}')`;
+            }
+        } catch (e) { /* silent — fall back to default hero-bg */ }
+    })();
+    </script>
+
+    <!-- Upcoming Group Tours (live — populated from scheduled events) -->
+    <section class="home-upcoming" id="homeUpcomingSection" style="display:none">
+        <div class="section-title">
+            <h2>🗺️ Upcoming Group Tours</h2>
+            <p>Scheduled departures organised by TrekNest Bhutan — reserve your spot today</p>
+        </div>
+        <div class="upcoming-events-grid" id="homeUpcomingGrid"></div>
+        <div style="text-align:center; margin-top:1.5rem">
+            <a href="group-treks.html" class="btn btn-primary btn-large">View All Group Tours →</a>
+        </div>
+    </section>
+
+    <script>
+    // Live upcoming events on the homepage — shows the soonest scheduled departures.
+    (async function loadHomeUpcoming() {
+        const section = document.getElementById('homeUpcomingSection');
+        const grid = document.getElementById('homeUpcomingGrid');
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/events/?upcoming=true&status=open');
+            if (!r.ok) return;
+            const events = await r.json();
+            if (!Array.isArray(events) || events.length === 0) return; // stays hidden if nothing scheduled
+
+            const soon = events.slice(0, 3);
+            grid.innerHTML = soon.map(ev => {
+                const start = new Date(ev.start_date).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+                const end = new Date(ev.end_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+                const region = ev.is_international ? ('🌏 ' + ev.country) : ('📍 ' + (ev.trek_dzongkhag || 'Bhutan'));
+                const op = ev.operator || {};
+                const typeLabel = (typeof tourTypeLabelHtml === 'function')
+                    ? ('<span class="inline-type">' + tourTypeLabelHtml(ev.tour_type, 13) + '</span>')
+                    : (ev.tour_type || 'trek');
+                return `
+                    <div class="upcoming-event-card">
+                        ${ev.trek_image_url ? `<img src="${ev.trek_image_url}" alt="${ev.trek_name}" onerror="this.style.display='none'">` : ''}
+                        <div class="upcoming-event-body">
+                            <div class="upcoming-event-meta">${typeLabel} · ${region}</div>
+                            <h4>${ev.title}</h4>
+                            <p style="color:#555; font-size:0.85rem;">${ev.trek_name}</p>
+                            <div class="upcoming-event-footer">
+                                <span>📅 ${start} → ${end}</span>
+                                <span>👥 ${ev.spots_left}/${ev.capacity}</span>
+                                <strong>Nu. ${ev.per_person_fee.toLocaleString()}</strong>
+                            </div>
+                            ${ev.featured_guest ? `<div class="featured-guest-badge">⭐ Special guest: <strong>${ev.featured_guest}</strong></div>` : ''}
+                            <div class="upcoming-event-operator">By <strong>${op.company_name || 'TrekNest Bhutan'}</strong>${op.is_verified ? ' · ✓ Verified' : ''}</div>
+                            <a href="group-treks.html" class="btn btn-outline-primary btn-small upcoming-event-cta">View &amp; Reserve →</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            section.style.display = '';
+        } catch (e) { /* silent — section stays hidden */ }
+    })();
+    </script>
+
+    <!-- Quick Stats -->
+    <section class="quick-stats">
+        <div class="stat-item">
+            <h3>50+</h3>
+            <p>Trekking Routes</p>
+        </div>
+        <div class="stat-item">
+            <h3>100+</h3>
+            <p>Guest Houses</p>
+        </div>
+        <div class="stat-item">
+            <h3>10,000+</h3>
+            <p>Happy Trekkers</p>
+        </div>
+        <div class="stat-item">
+            <h3>4.8★</h3>
+            <p>Average Rating</p>
+        </div>
+    </section>
+
+    <!-- Why Trek Bhutan -->
+    <section class="why-bhutan">
+        <div class="section-title">
+            <h2>Why Trek Bhutan with TrekNest?</h2>
+            <p>Discover what makes trekking in Bhutan extraordinary</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">🌿</div>
+                <h3>Untouched Nature</h3>
+                <p>81% forest cover and pristine wilderness await your discovery</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🏡</div>
+                <h3>Comfortable Stays</h3>
+                <p>Handpicked guesthouses with warm hospitality and authentic cuisine</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">👥</div>
+                <h3>Expert Guides</h3>
+                <p>Local experts who know every trail and share cultural insights</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🎯</div>
+                <h3>Hassle-Free Booking</h3>
+                <p>Easy online booking for accommodations along your trek route</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Trek Routes (dynamic, with photos) -->
+    <section class="featured-treks-section">
+        <div class="section-title">
+            <h2>Featured Trek Routes</h2>
+            <p>Handpicked treks offering the best of Bhutan's natural beauty</p>
+        </div>
+        <div class="featured-treks-grid" id="topTreksContainer">
+            <p class="treks-empty-state">Loading featured treks...</p>
+        </div>
+    </section>
+
+    <!-- Upcoming Treks with Dates -->
+    <section class="upcoming-treks-section">
+        <div class="section-title">
+            <h2>Upcoming Trek Schedules</h2>
+            <p>Join group treks with confirmed dates and experienced guides</p>
+        </div>
+        <div class="upcoming-treks-list">
+            <div class="upcoming-trek-item">
+                <div class="trek-schedule-icon">📅</div>
+                <div class="trek-schedule-info">
+                    <h4>Druk Path Trek - Spring Edition</h4>
+                    <p><strong>Dates:</strong> April 15-18, 2026</p>
+                    <p><strong>Duration:</strong> 4 Days | <strong>Difficulty:</strong> Moderate</p>
+                    <p><strong>Group Size:</strong> 8/12 spots filled</p>
+                    <p>Experience the valley in full bloom with 4 remaining spots available.</p>
+                </div>
+                <div class="trek-schedule-action">
+                    <span class="price">Nu. 6,500</span>
+                    <button class="btn btn-primary btn-small">Book Now</button>
+                </div>
+            </div>
+
+            <div class="upcoming-trek-item">
+                <div class="trek-schedule-icon">📅</div>
+                <div class="trek-schedule-info">
+                    <h4>Bumdrak Trek - May Group</h4>
+                    <p><strong>Dates:</strong> May 3-7, 2026</p>
+                    <p><strong>Duration:</strong> 5 Days | <strong>Difficulty:</strong> Difficult</p>
+                    <p><strong>Group Size:</strong> 5/10 spots filled</p>
+                    <p>Perfect timing for clear skies and monastery views. Experienced climbers recommended.</p>
+                </div>
+                <div class="trek-schedule-action">
+                    <span class="price">Nu. 8,200</span>
+                    <button class="btn btn-primary btn-small">Book Now</button>
+                </div>
+            </div>
+
+            <div class="upcoming-trek-item">
+                <div class="trek-schedule-icon">📅</div>
+                <div class="trek-schedule-info">
+                    <h4>Jomolhari Trek - Premium Expedition</h4>
+                    <p><strong>Dates:</strong> September 10-15, 2026</p>
+                    <p><strong>Duration:</strong> 6 Days | <strong>Difficulty:</strong> Very Difficult</p>
+                    <p><strong>Group Size:</strong> 2/8 spots filled</p>
+                    <p>Limited slots for this legendary trek. Pre-trek training recommended.</p>
+                </div>
+                <div class="trek-schedule-action">
+                    <span class="price">Nu. 12,500</span>
+                    <button class="btn btn-primary btn-small">Book Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="view-all-link">
+            <a href="treks.html" class="btn btn-outline-primary">View All Schedules →</a>
+        </div>
+    </section>
+
+    <!-- Trek Difficulty Guide -->
+    <section class="difficulty-guide">
+        <div class="section-title">
+            <h2>Trek Difficulty Levels</h2>
+            <p>Choose the perfect trek for your fitness level</p>
+        </div>
+        <div class="difficulty-cards">
+            <div class="difficulty-card easy">
+                <h3>🟢 Easy</h3>
+                <p><strong>Altitude:</strong> Up to 2,500m</p>
+                <p><strong>Duration:</strong> 2-3 days</p>
+                <p><strong>For:</strong> All fitness levels, families</p>
+                <p class="example">Example: Phobjikha Valley Trek</p>
+            </div>
+            <div class="difficulty-card moderate">
+                <h3>🟡 Moderate</h3>
+                <p><strong>Altitude:</strong> 2,500-3,500m</p>
+                <p><strong>Duration:</strong> 4-5 days</p>
+                <p><strong>For:</strong> Regular trekkers, decent fitness</p>
+                <p class="example">Example: Druk Path Trek</p>
+            </div>
+            <div class="difficulty-card difficult">
+                <h3>🔴 Difficult</h3>
+                <p><strong>Altitude:</strong> 3,500-4,500m</p>
+                <p><strong>Duration:</strong> 5-7 days</p>
+                <p><strong>For:</strong> Experienced trekkers</p>
+                <p class="example">Example: Jomolhari Trek</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trek by Region -->
+    <section class="treks-by-region">
+        <div class="section-title">
+            <h2>Explore by Region</h2>
+            <p>Discover unique trekking experiences across Bhutan's dzongkhags</p>
+        </div>
+        <div class="region-grid">
+            <div class="region-card" onclick="filterTreksByDzongkhag('Paro')">
+                <div class="region-image paro-region"></div>
+                <h3>Paro Valley</h3>
+                <p>5 Treks</p>
+                <p class="region-description">Home to iconic Tiger's Nest and alpine adventures</p>
+            </div>
+            <div class="region-card" onclick="filterTreksByDzongkhag('Punakha')">
+                <div class="region-image punakha-region"></div>
+                <h3>Punakha Valley</h3>
+                <p>6 Treks</p>
+                <p class="region-description">Scenic valleys with cultural heritage trails</p>
+            </div>
+            <div class="region-card" onclick="filterTreksByDzongkhag('Wangdue Phodrang')">
+                <div class="region-image wangdue-region"></div>
+                <h3>Wangdue Phodrang</h3>
+                <p>8 Treks</p>
+                <p class="region-description">Remote wilderness and epic mountain adventures</p>
+            </div>
+            <div class="region-card" onclick="filterTreksByDzongkhag('Thimphu')">
+                <div class="region-image thimphu-region"></div>
+                <h3>Thimphu Region</h3>
+                <p>4 Treks</p>
+                <p class="region-description">Accessible treks near the capital city</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Treks Section -->
+    <section class="all-treks-section" id="allTreksSection">
+        <div class="section-title">
+            <h2>All Available Treks</h2>
+            <p>Browse our complete collection of trekking routes</p>
+        </div>
+        <div class="treks-grid" id="featuredTreksContainer"></div>
+    </section>
+
+    <!-- What's Included -->
+    <section class="whats-included">
+        <div class="section-title">
+            <h2>What's Included in Your Trek</h2>
+            <p>Everything you need for a perfect trekking experience</p>
+        </div>
+        <div class="included-grid">
+            <div class="included-item">
+                <div class="included-icon">🏡</div>
+                <h4>Accommodation</h4>
+                <p>Comfortable guesthouses at each trek stop with hot water and meals</p>
+            </div>
+            <div class="included-item">
+                <div class="included-icon">🍽️</div>
+                <h4>Meals</h4>
+                <p>Authentic Bhutanese cuisine and international options for all dietary needs</p>
+            </div>
+            <div class="included-item">
+                <div class="included-icon">👨‍🏫</div>
+                <h4>Expert Guides</h4>
+                <p>Experienced local guides with deep knowledge and cultural insights</p>
+            </div>
+            <div class="included-item">
+                <div class="included-icon">🚐</div>
+                <h4>Transportation</h4>
+                <p>Comfortable vehicle transfers to/from trek starting and ending points</p>
+            </div>
+            <div class="included-item">
+                <div class="included-icon">🗺️</div>
+                <h4>Trek Map</h4>
+                <p>Detailed route map and daily itinerary with important information</p>
+            </div>
+            <div class="included-item">
+                <div class="included-icon">📱</div>
+                <h4>24/7 Support</h4>
+                <p>Round-the-clock customer support during your entire trek</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="section-title">
+            <h2>What Trekkers Say</h2>
+            <p>Real experiences from our trekking community</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="rating">★★★★★</div>
+                <p>"An absolutely incredible experience! The Druk Path Trek was perfectly organized with amazing accommodations and our guide was phenomenal."</p>
+                <div class="testimonial-author">
+                    <strong>Sarah Johnson</strong>
+                    <p>Druk Path Trek, April 2025</p>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="rating">★★★★★</div>
+                <p>"The views from Jomolhari were worth every step. TrekNest made the entire booking process seamless and the accommodations were comfortable."</p>
+                <div class="testimonial-author">
+                    <strong>Michael Chen</strong>
+                    <p>Jomolhari Trek, October 2025</p>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="rating">★★★★★</div>
+                <p>"Best trek I've ever done. The guesthouses were charming, the food delicious, and every moment felt special. Highly recommend!"</p>
+                <div class="testimonial-author">
+                    <strong>Emma Davis</strong>
+                    <p>Bumdrak Trek, May 2025</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pilgrimage Tours Section -->
+    <section class="pilgrimage-section-header">
+        <h2>🛕 Pilgrimage Tours</h2>
+        <p>Sacred journeys organised end to end — Buddhist circuits inside Bhutan and beyond, including Bodh Gaya, Lumbini, Sarnath, and Mount Kailash. We handle visas, flights, accommodation, and a Bhutanese pilgrim guide.</p>
+        <button class="btn btn-primary btn-large mt-2" style="margin-top:1.25rem" onclick="window.location.href='group-treks.html'">View Pilgrimage Departures →</button>
+    </section>
+
+    <!-- Our Team Section -->
+    <section class="our-team-section" style="padding: 3rem 0; background: #fafafa;">
+        <div class="section-title">
+            <h2>👥 Our Team</h2>
+            <p>Small team of certified Bhutanese guides who plan and lead every TrekNest tour</p>
+        </div>
+        <div class="team-grid" id="teamGrid">
+            <p style="grid-column:1/-1; text-align:center; color:#888;">Loading team…</p>
+        </div>
+    </section>
+
+    <!-- Trek Moments -->
+    <section class="home-moments" id="homeMomentsSection" style="display:none; padding:3rem 0;">
+        <div class="section-title">
+            <h2>📸 Trek Moments</h2>
+            <p>Real photo highlights from recent TrekNest journeys</p>
+        </div>
+        <div class="moments-grid" id="homeMomentsGrid"></div>
+        <div style="text-align:center; margin-top:1.5rem">
+            <a href="moments.html" class="btn btn-outline-primary">See all moments →</a>
+        </div>
+    </section>
+
+    <script>
+    (async function loadHomeMoments() {
+        const section = document.getElementById('homeMomentsSection');
+        const grid = document.getElementById('homeMomentsGrid');
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/moments/?limit=4');
+            const moments = await r.json();
+            if (!Array.isArray(moments) || !moments.length) return;
+            const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            grid.innerHTML = moments.map(m => `
+                <div class="moment-card">
+                    <img src="${esc(m.image_url)}" alt="${esc(m.caption || 'Trek moment')}" onerror="this.style.display='none'">
+                    <div class="moment-body">
+                        ${m.trek_name ? `<div class="moment-trek">${esc(m.trek_name)}</div>` : ''}
+                        ${m.caption ? `<div class="moment-caption">${esc(m.caption)}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            section.style.display = '';
+        } catch (e) { /* stays hidden */ }
+    })();
+    </script>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Ready for Your Bhutan Adventure?</h2>
+        <p>Join trekkers and pilgrims exploring Bhutan and the Himalayan region with TrekNest</p>
+        <button class="btn btn-primary btn-large" onclick="window.location.href='treks.html'">Start Planning Your Trek →</button>
+    </section>
+
+    <script>
+    (async function loadTeam() {
+        const grid = document.getElementById('teamGrid');
+        try {
+            const r = await fetch((window.API_BASE_URL || 'http://localhost:5000/api') + '/admin/team');
+            const team = await r.json();
+            if (!Array.isArray(team) || !team.length) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">Our guide team is being onboarded — check back soon.</p>';
+                return;
+            }
+            grid.innerHTML = team.map(m => `
+                <div class="team-card">
+                    <div class="team-photo">${m.photo_url ? `<img src="${m.photo_url}" alt="${m.display_name}" onerror="this.parentElement.textContent='🧑‍🦱'">` : '🧑‍🦱'}</div>
+                    <div class="team-name">${m.display_name || ''}</div>
+                    <div class="team-role">${m.role_title || 'Trek Guide'}</div>
+                    ${m.bio ? `<div class="team-bio">${m.bio}</div>` : ''}
+                    <div class="team-meta">${m.years_experience ? m.years_experience + ' yrs experience' : ''}${m.languages ? ' · ' + m.languages : ''}</div>
+                </div>
+            `).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">Team info unavailable.</p>';
+        }
+    })();
+    </script>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p style="text-align:center; margin-top:0.75rem; font-size:0.9rem;">
+                    <a href="forgot-password.html" style="color:var(--primary-color);">Forgot password?</a>
+                </p>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Trek Detail Modal -->
+    <div id="trekDetailModal" class="modal">
+        <div class="modal-content trek-detail-modal">
+            <span class="close" onclick="closeTrekModal()">&times;</span>
+            <div id="trekDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="siteFooter"></footer>
+
+    <!-- Scroll-to-top floating button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Scroll to top" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script>
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        const homeNav = document.getElementById('homeNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) scrollBtn.classList.add('visible');
+            else scrollBtn.classList.remove('visible');
+            if (homeNav) {
+                if (window.scrollY > 80) homeNav.classList.add('solid');
+                else homeNav.classList.remove('solid');
+            }
+        });
+    </script>
+</body>
+</html>

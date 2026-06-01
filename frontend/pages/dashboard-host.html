@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Dashboard - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="dashboard-host.html" class="active">Host Dashboard</a></li>
+                <li><a href="account.html">My Account</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+        <div class="dashboard-header">
+            <h1>Welcome back, <span id="userName">Host</span> 🏨</h1>
+            <p>Manage your guest house listings, rooms, and bookings.</p>
+            <span class="role-badge">Guest House Owner</span>
+        </div>
+
+        <h2>🥾 Upcoming Group Tours</h2>
+        <p style="color:#666; font-size:0.95rem;">Tours TrekNest Bhutan has scheduled — useful for anticipating room demand on your property. <a href="group-treks.html" style="color:var(--primary-color)">See all →</a></p>
+        <div id="upcomingEventsList" class="upcoming-events-grid">
+            <p style="color:#666">Loading upcoming tours…</p>
+        </div>
+
+        <h2 style="margin-top:2.5rem">📨 Booking Requests on Your Properties</h2>
+        <link rel="stylesheet" href="../css/booking-form.css">
+        <div id="hostBookingsList" class="bookings-list">
+            <p style="color:#666">Loading bookings…</p>
+        </div>
+
+        <h2 style="margin-top:2.5rem">Your Listings</h2>
+        <div id="hostListingsContainer" class="host-listings">
+            <p style="color:#666">Loading your listings...</p>
+        </div>
+
+        <h2 style="margin-top:2.5rem">Add a New Accommodation</h2>
+        <form id="addAccForm" class="host-form" onsubmit="submitAccommodation(event)">
+            <div id="accFormMessage" class="host-form-message"></div>
+
+            <div class="form-row">
+                <div>
+                    <label for="accName">Property Name *</label>
+                    <input type="text" id="accName" placeholder="e.g. Druk Lodge" required>
+                </div>
+                <div>
+                    <label for="accDzongkhag">Region (Dzongkhag) *</label>
+                    <select id="accDzongkhag" required>
+                        <option value="">Select region</option>
+                        <option value="Paro">Paro</option>
+                        <option value="Thimphu">Thimphu</option>
+                        <option value="Punakha">Punakha</option>
+                        <option value="Wangdue Phodrang">Wangdue Phodrang</option>
+                        <option value="Bumthang">Bumthang</option>
+                        <option value="Gasa">Gasa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="accAddress">Address</label>
+                    <input type="text" id="accAddress" placeholder="e.g. Tsento, Paro">
+                </div>
+                <div>
+                    <label for="accPhone">Phone</label>
+                    <input type="tel" id="accPhone" placeholder="+975-...">
+                </div>
+            </div>
+
+            <div>
+                <label for="accDescription">Description</label>
+                <textarea id="accDescription" placeholder="Tell guests about your property..."></textarea>
+            </div>
+
+            <div class="form-row" style="margin-top:1rem">
+                <div>
+                    <label for="accImageFile">Property Photos — select one or more</label>
+                    <input type="file" id="accImageFile" accept="image/jpeg,image/png,image/webp" multiple onchange="previewImages(event)">
+                    <p style="font-size:0.82rem; color:#888; margin-top:0.3rem">Tip: hold Ctrl (or Shift) to pick several photos at once. The first photo becomes the cover image.</p>
+                    <div id="imagePreview" style="margin-top:0.5rem; display:none">
+                        <div id="imagePreviewGrid" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+                        <p id="imageUploadStatus" style="font-size:0.85rem; color:#666; margin-top:0.4rem"></p>
+                    </div>
+                </div>
+                <div>
+                    <label for="accRating">Rating (0–5)</label>
+                    <input type="number" id="accRating" min="0" max="5" step="0.1" value="4.0">
+                </div>
+            </div>
+
+            <h3 style="margin-top:1.5rem">Starter Room</h3>
+            <p style="color:#666; font-size:0.9rem; margin-bottom:0.75rem">We'll create one room for your listing. You can add more later.</p>
+            <div class="form-row">
+                <div>
+                    <label for="accStartingPrice">Price per night (Nu.) *</label>
+                    <input type="number" id="accStartingPrice" min="0" step="50" placeholder="1500" required>
+                </div>
+                <div>
+                    <label for="accRoomType">Room Type</label>
+                    <input type="text" id="accRoomType" placeholder="Standard Twin" value="Standard">
+                </div>
+                <div>
+                    <label for="accRoomCapacity">Sleeps</label>
+                    <input type="number" id="accRoomCapacity" min="1" max="10" value="2">
+                </div>
+            </div>
+
+            <div>
+                <label for="accAmenities">Amenities</label>
+                <input type="text" id="accAmenities" placeholder="Wi-Fi, Hot shower, Heater">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem">➕ Add Accommodation</button>
+        </form>
+    </section>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/bookings-tracker.js"></script>
+    <script>
+        const user = requireAuth(['host']);
+        if (user) {
+            document.getElementById('userName').textContent = user.first_name || user.username;
+            loadUpcomingEvents();
+            loadHostListings(user.user_id || user.id);
+            loadHostBookings(user.user_id || user.id);
+        }
+
+        async function loadHostListings(ownerId) {
+            const container = document.getElementById('hostListingsContainer');
+            try {
+                const r = await fetch(API_BASE_URL + '/accommodations/?owner_id=' + ownerId);
+                const list = await r.json();
+                if (list.length === 0) {
+                    container.innerHTML = '<p style="color:#999">You haven\'t added any accommodations yet. Use the form below to add your first one.</p>';
+                    return;
+                }
+                container.innerHTML = list.map(a => `
+                    <div class="host-listing-card">
+                        ${a.image_url ? `<img src="${a.image_url}" alt="${a.name}" style="width:100%; height:140px; object-fit:cover; border-radius:6px; margin-bottom:0.5rem" onerror="this.style.display='none'">` : ''}
+                        <h4>${a.name}</h4>
+                        <p>📍 ${a.dzongkhag || 'N/A'}</p>
+                        <p>🛏️ ${a.rooms_count} room${a.rooms_count !== 1 ? 's' : ''}</p>
+                        <p>⭐ ${a.rating ? a.rating.toFixed(1) : 'New'}</p>
+                        ${a.price_min ? `<p>💰 from Nu. ${a.price_min}/night</p>` : ''}
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<p style="color:#d33">Failed to load listings.</p>';
+            }
+        }
+
+        // Collected URLs of all successfully uploaded property photos.
+        let uploadedImageUrls = [];
+
+        async function previewImages(event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+
+            const preview = document.getElementById('imagePreview');
+            const grid = document.getElementById('imagePreviewGrid');
+            const status = document.getElementById('imageUploadStatus');
+            preview.style.display = 'block';
+            status.textContent = `⏳ Uploading ${files.length} photo(s)…`;
+            status.style.color = '#666';
+
+            let okCount = 0, failCount = 0;
+            for (const file of files) {
+                const formData = new FormData();
+                formData.append('image', file);
+                try {
+                    const r = await authFetch(API_BASE_URL + '/accommodations/upload-image', {
+                        method: 'POST', body: formData
+                    });
+                    const data = await r.json();
+                    if (r.ok && data.image_url) {
+                        uploadedImageUrls.push(data.image_url);
+                        const img = document.createElement('img');
+                        img.src = data.image_url;
+                        img.className = 'acc-upload-thumb';
+                        img.title = (uploadedImageUrls.length === 1) ? 'Cover photo' : 'Photo ' + uploadedImageUrls.length;
+                        grid.appendChild(img);
+                        okCount++;
+                    } else {
+                        failCount++;
+                    }
+                } catch (e) {
+                    failCount++;
+                }
+            }
+            status.textContent = `✅ ${uploadedImageUrls.length} photo(s) ready` +
+                (failCount ? ` · ⚠ ${failCount} failed` : '') +
+                (uploadedImageUrls.length ? ' — first one is the cover image' : '');
+            status.style.color = uploadedImageUrls.length ? '#1e7d32' : '#d33';
+            // allow re-selecting (so the same file picker can add more)
+            event.target.value = '';
+        }
+
+        async function previewImage(event) { return previewImages(event); }  // back-compat alias
+
+        async function submitAccommodation(event) {
+            event.preventDefault();
+            const msg = document.getElementById('accFormMessage');
+            msg.className = 'host-form-message';
+            msg.textContent = '';
+
+            const ownerId = user.user_id || user.id;
+            const payload = {
+                name: document.getElementById('accName').value.trim(),
+                dzongkhag: document.getElementById('accDzongkhag').value,
+                address: document.getElementById('accAddress').value.trim(),
+                phone: document.getElementById('accPhone').value.trim(),
+                description: document.getElementById('accDescription').value.trim(),
+                image_gallery: uploadedImageUrls,
+                image_url: uploadedImageUrls[0] || '',
+                rating: parseFloat(document.getElementById('accRating').value) || 0,
+                starting_price: parseFloat(document.getElementById('accStartingPrice').value),
+                room_type: document.getElementById('accRoomType').value.trim(),
+                room_capacity: parseInt(document.getElementById('accRoomCapacity').value, 10) || 2,
+                amenities: document.getElementById('accAmenities').value.trim()
+            };
+
+            try {
+                const r = await authFetch(API_BASE_URL + '/accommodations/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await r.json();
+                if (!r.ok) {
+                    msg.className = 'host-form-message error';
+                    msg.textContent = data.error || 'Failed to add accommodation';
+                    return;
+                }
+                msg.className = 'host-form-message success';
+                msg.textContent = `✅ Accommodation added with ${uploadedImageUrls.length} photo(s)! It is now pending admin verification.`;
+                document.getElementById('addAccForm').reset();
+                document.getElementById('accRating').value = '4.0';
+                uploadedImageUrls = [];
+                document.getElementById('imagePreviewGrid').innerHTML = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                loadHostListings(ownerId);
+            } catch (e) {
+                msg.className = 'host-form-message error';
+                msg.textContent = 'Network error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

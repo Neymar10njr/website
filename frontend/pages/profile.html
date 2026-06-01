@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - TrekNest Bhutan</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/booking-form.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="profile.html" class="active">Profile</a></li>
+                <li><a href="#" onclick="toggleAuthModal()">Sign In</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="profile-page">
+        <!-- Header card -->
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-header-info">
+                <h2 id="profileFullName">Loading…</h2>
+                <p class="profile-username" id="profileUsername"></p>
+                <span class="profile-role-badge" id="profileRoleBadge"></span>
+            </div>
+            <div class="profile-quick-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-value" id="statBookings">—</div>
+                    <div class="profile-stat-label">Bookings</div>
+                </div>
+                <div class="profile-stat" id="statListingsWrap" style="display:none">
+                    <div class="profile-stat-value" id="statListings">—</div>
+                    <div class="profile-stat-label">Listings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="profile-tabs">
+            <button class="profile-tab-btn active" data-tab="info">👤 Account Info</button>
+            <button class="profile-tab-btn" data-tab="bookings">📅 My Bookings</button>
+            <button class="profile-tab-btn" data-tab="listings" id="listingsTabBtn" style="display:none">🏨 My Listings</button>
+        </div>
+
+        <!-- Account Info Tab -->
+        <div id="infoTab" class="profile-tab-pane active">
+            <div class="profile-card">
+                <h3>Account Details</h3>
+                <div class="profile-info-grid">
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Username</span>
+                        <span class="profile-info-value" id="infoUsername">—</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Full Name</span>
+                        <span class="profile-info-value" id="infoFullName">—</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">Account Type</span>
+                        <span class="profile-info-value" id="infoUserType">—</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">User ID</span>
+                        <span class="profile-info-value" id="infoUserId">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h3>Quick Actions</h3>
+                <div class="profile-actions">
+                    <a href="treks.html" class="profile-action-btn">🥾 Explore Treks</a>
+                    <a href="accommodations.html" class="profile-action-btn">🏡 Browse Stays</a>
+                    <a href="#" class="profile-action-btn" id="dashboardLink">🎯 My Dashboard</a>
+                    <a href="#" class="profile-action-btn profile-action-danger" onclick="logout(); return false;">🚪 Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Bookings Tab -->
+        <div id="bookingsTab" class="profile-tab-pane">
+            <div class="profile-card">
+                <h3>📅 My Bookings</h3>
+                <p class="profile-tab-hint">Track every booking you've made — pending, confirmed, completed, or cancelled.</p>
+                <div id="myBookingsList" class="bookings-list">
+                    <p style="color:#666">Loading…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Listings Tab (hosts only) -->
+        <div id="listingsTab" class="profile-tab-pane">
+            <div class="profile-card">
+                <h3>🏨 My Listings</h3>
+                <p class="profile-tab-hint">Properties you have listed on TrekNest. Manage them from your <a href="dashboard-host.html">Host Dashboard</a>.</p>
+                <div id="profileListingsContainer" class="host-listings">
+                    <p style="color:#666">Loading…</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div id="loginError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUsername" placeholder="Username" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <input type="text" id="regFirstName" placeholder="First Name" required>
+                <input type="text" id="regLastName" placeholder="Last Name" required>
+                <select id="regUserType" required>
+                    <option value="">Select User Type</option>
+                    <option value="tourist">Tourist (International)</option>
+                    <option value="local_tourist">Local Tourist (Bhutanese)</option>
+                    <option value="host">Guest House Owner</option>
+                </select>
+                <div id="registerError" class="auth-error"></div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/bookings-tracker.js"></script>
+    <script>
+        const user = requireAuth();
+        if (user) initProfile(user);
+
+        function initProfile(u) {
+            const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.username;
+            const initials = fullName.split(' ').filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('') || '👤';
+            const roleLabels = { tourist: '🌏 Tourist', local_tourist: '🇧🇹 Local Tourist', host: '🏨 Guest House Owner' };
+
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('profileFullName').textContent = fullName;
+            document.getElementById('profileUsername').textContent = '@' + u.username;
+            document.getElementById('profileRoleBadge').textContent = roleLabels[u.user_type] || u.user_type;
+
+            document.getElementById('infoUsername').textContent = u.username;
+            document.getElementById('infoFullName').textContent = fullName;
+            document.getElementById('infoUserType').textContent = roleLabels[u.user_type] || u.user_type;
+            document.getElementById('infoUserId').textContent = '#' + (u.user_id || u.id);
+            document.getElementById('dashboardLink').href = (DASHBOARD_BY_TYPE[u.user_type]) || 'profile.html';
+
+            const userId = u.user_id || u.id;
+            loadMyBookings(userId);
+            loadBookingCount(userId);
+
+            if (u.user_type === 'host') {
+                document.getElementById('listingsTabBtn').style.display = '';
+                document.getElementById('statListingsWrap').style.display = '';
+                loadProfileListings(userId);
+            }
+
+            document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchProfileTab(btn.dataset.tab));
+            });
+        }
+
+        function switchProfileTab(name) {
+            document.querySelectorAll('.profile-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+            document.querySelectorAll('.profile-tab-pane').forEach(p => p.classList.toggle('active', p.id === name + 'Tab'));
+        }
+
+        async function loadBookingCount(userId) {
+            try {
+                const r = await authFetch(API_BASE_URL + '/bookings/?scope=mine');
+                const data = await r.json();
+                document.getElementById('statBookings').textContent = Array.isArray(data) ? data.length : 0;
+            } catch (e) { document.getElementById('statBookings').textContent = '0'; }
+        }
+
+        async function loadProfileListings(ownerId) {
+            const container = document.getElementById('profileListingsContainer');
+            try {
+                const r = await fetch(API_BASE_URL + '/accommodations/?owner_id=' + ownerId);
+                const list = await r.json();
+                document.getElementById('statListings').textContent = list.length;
+                if (list.length === 0) {
+                    container.innerHTML = '<p style="color:#999">No listings yet. Add one from your <a href="dashboard-host.html">Host Dashboard</a>.</p>';
+                    return;
+                }
+                container.innerHTML = list.map(a => `
+                    <div class="host-listing-card">
+                        ${a.image_url ? `<img src="${a.image_url}" alt="${a.name}" style="width:100%;height:140px;object-fit:cover;border-radius:6px;margin-bottom:0.5rem" onerror="this.style.display='none'">` : ''}
+                        <h4>${a.name}</h4>
+                        <p>📍 ${a.dzongkhag || 'N/A'}</p>
+                        <p>🛏️ ${a.rooms_count} room${a.rooms_count !== 1 ? 's' : ''}</p>
+                        <p>⭐ ${a.rating ? a.rating.toFixed(1) : 'New'}</p>
+                        ${a.price_min ? `<p>💰 from Nu. ${a.price_min}/night</p>` : ''}
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<p style="color:#d33">Failed to load listings.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

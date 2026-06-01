@@ -1,0 +1,86 @@
+# Production overlay. Use:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Requires .env with all production values set.
+
+services:
+  db:
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: !reset []  # don't expose Postgres to the host in prod
+
+  backend:
+    environment:
+      - DATABASE_URI=${DATABASE_URI}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - FLASK_ENV=production
+      - PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_USE_TLS=${SMTP_USE_TLS}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL}
+    volumes:
+      - backend_uploads:/app/app/static/uploads
+      - backend_logs:/app/logs
+      - backend_migrations:/app/migrations
+    ports: !reset []  # only Caddy can reach backend, not the public
+
+  frontend:
+    ports: !reset []  # only Caddy talks to frontend
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: treknest-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    environment:
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN}
+      - ACME_EMAIL=${ACME_EMAIL}
+    depends_on:
+      - frontend
+      - backend
+
+  db-backup:
+    image: postgres:16-alpine
+    container_name: treknest-backup
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./scripts/restore.sh:/usr/local/bin/restore.sh:ro
+      - ./scripts/backup-entrypoint.sh:/usr/local/bin/backup-entrypoint.sh:ro
+    environment:
+      - PGHOST=db
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB}
+      - BACKUP_RETENTION_DAYS=14
+    entrypoint: ["/bin/sh", "/usr/local/bin/backup-entrypoint.sh"]
+
+volumes:
+  backend_logs:
+  backend_migrations:
+  caddy_data:
+  caddy_config:
+  caddy_logs:

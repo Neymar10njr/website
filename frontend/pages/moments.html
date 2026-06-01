@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trek Moments - TrekNest Bhutan</title>
+    <meta name="description" content="Photo highlights from real TrekNest Bhutan treks, hikes, and pilgrimages.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><h1>🏔️ TrekNest Bhutan</h1></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="treks.html">Explore Treks</a></li>
+                <li><a href="accommodations.html">Stays</a></li>
+                <li><a href="group-treks.html">Group Tours</a></li>
+                <li><a href="moments.html" class="active">Moments</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>📸 Trek Moments</h1>
+        <p>Real photo highlights from TrekNest Bhutan journeys — treks, hikes, and pilgrimages</p>
+    </section>
+
+    <div class="moments-grid" id="momentsGallery">
+        <p style="grid-column:1/-1; text-align:center; color:#888">Loading moments…</p>
+    </div>
+
+    <div style="text-align:center; margin:2.5rem 0">
+        <a href="group-treks.html" class="btn btn-primary btn-large">Join an upcoming tour →</a>
+    </div>
+
+    <footer id="siteFooter"></footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/footer.js"></script>
+    <script>
+    (async function loadMomentsGallery() {
+        const grid = document.getElementById('momentsGallery');
+        try {
+            const apiBase = (window.TREKNEST_API_BASE_URL) || (window.location.origin + '/api');
+            const r = await fetch(apiBase + '/moments/');
+            const moments = await r.json();
+            if (!Array.isArray(moments) || !moments.length) {
+                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888">No moments posted yet — check back soon for photo highlights from our treks.</p>';
+                return;
+            }
+            const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            grid.innerHTML = moments.map(m => `
+                <div class="moment-card">
+                    <img src="${esc(m.image_url)}" alt="${esc(m.caption || 'Trek moment')}" onerror="this.style.display='none'">
+                    <div class="moment-body">
+                        ${m.trek_name ? `<div class="moment-trek">${esc(m.trek_name)}</div>` : ''}
+                        ${m.caption ? `<div class="moment-caption">${esc(m.caption)}</div>` : ''}
+                        <div class="moment-meta">${m.created_at ? new Date(m.created_at).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) : ''}</div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#d33">Could not load moments.</p>';
+        }
+    })();
+    </script>
+</body>
+</html>
